@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Nexo — Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f7;--card:#fff;--ink:#0f1b33;--mute:#5d6b85;--acc:#2b4cff;--accink:#fff;--line:#d9e0ec;--good:#0e9f6e;--bad:#d6336c;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root:not([data-theme="light"]){}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1020;--card:#151c33;--ink:#eaf0ff;--mute:#93a0bf;--acc:#6c86ff;--accink:#0b1020;--line:#262f4d;--good:#34d399;--bad:#f472b6}}
+:root[data-theme="dark"]{--bg:#0b1020;--card:#151c33;--ink:#eaf0ff;--mute:#93a0bf;--acc:#6c86ff;--accink:#0b1020;--line:#262f4d;--good:#34d399;--bad:#f472b6}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Sora,system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:640px;margin:0 auto;padding:20px 16px 96px}
+h1{font-size:2rem;font-weight:800;letter-spacing:-.03em;margin:8px 0 2px}
+h2{font-size:1.1rem;font-weight:600;margin:0 0 12px}
+.sub{color:var(--mute);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:4px;background:var(--card);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;max-width:150px;background:none;border:0;color:var(--mute);font:600 .85rem Sora,system-ui,sans-serif;padding:10px 4px;border-radius:12px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--acc);color:var(--accink)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.row{display:flex;gap:8px;align-items:center}
+input{flex:1;min-width:0;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit}
+.btn{background:var(--acc);color:var(--accink);border:0;border-radius:10px;padding:10px 14px;font:600 .9rem Sora,system-ui,sans-serif;cursor:pointer}
+.ghost{background:none;color:var(--mute);border:1px solid var(--line)}
+.item{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item span{flex:1}
+.done span{text-decoration:line-through;color:var(--mute)}
+.x{background:none;border:0;color:var(--mute);cursor:pointer;font-size:1.1rem}
+.big{font-size:2.4rem;font-weight:800;letter-spacing:-.03em}
+.good{color:var(--good)}.bad{color:var(--bad)}
+.bar{height:10px;background:var(--bg);border-radius:6px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:6px;transition:width .3s}
+.flash{min-height:150px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.3rem;font-weight:600;padding:16px;cursor:pointer;border:1px dashed var(--line);border-radius:14px}
+.empty{color:var(--mute);margin:4px 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main><a href="index.html" style="color:var(--mute);font-size:.85rem;text-decoration:none">← Inicio</a><div id="app"></div></main>
+<nav role="tablist" aria-label="Secciones"></nav>
+<script>
+const TABS=[["hoy","Hoy"],["dinero","Dinero"],["estudio","Estudio"],["salud","Salud"]];
+let S={tasks:[],tx:[],goal:1000,cards:[],water:0,wday:"",habits:[]},tab="hoy",ci=0,show=false;
+try{const r=localStorage.getItem("nexo");if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+const today=new Date().toDateString();
+if(S.wday!==today){S.water=0;S.wday=today;S.habits.forEach(h=>h.done=false)}
+const save=()=>{try{localStorage.setItem("nexo",JSON.stringify(S))}catch(e){}};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const eur=n=>n.toLocaleString("es-ES",{style:"currency",currency:"EUR"});
+const $=id=>document.getElementById(id);
+function list(arr,fn,msg){return arr.length?arr.map(fn).join(""):`<p class="empty">${msg}</p>`}
+
+function views(){
+if(tab==="hoy"){const d=S.tasks.filter(t=>t.d).length,p=S.tasks.length?Math.round(d/S.tasks.length*100):0;
+return `<h1>Hoy</h1><p class="sub">${d} de ${S.tasks.length} tareas hechas</p>
+<div class="card"><div class="row"><input id="ti" placeholder="Añade una tarea" aria-label="Nueva tarea"><button class="btn" onclick="addTask()">Añadir</button></div>
+<div class="bar"><i style="width:${p}%"></i></div>
+${list(S.tasks,(t,i)=>`<div class="item ${t.d?"done":""}"><input type="checkbox" style="flex:none" ${t.d?"checked":""} onchange="S.tasks[${i}].d=this.checked;go()" aria-label="Completar"><span>${esc(t.t)}</span><button class="x" onclick="S.tasks.splice(${i},1);go()" aria-label="Borrar">×</button></div>`,"Aún no tienes tareas. Escribe la primera arriba.")}</div>`}
+if(tab==="dinero"){const inc=S.tx.filter(x=>x.a>0).reduce((s,x)=>s+x.a,0),out=-S.tx.filter(x=>x.a<0).reduce((s,x)=>s+x.a,0),bal=inc-out,p=Math.max(0,Math.min(100,bal/S.goal*100));
+return `<h1>Dinero</h1><p class="sub">Controla lo que entra y lo que sale</p>
+<div class="card"><div class="big ${bal<0?"bad":"good"}">${eur(bal)}</div><p class="sub" style="margin:0">Ingresos ${eur(inc)} · Gastos ${eur(out)}</p></div>
+<div class="card"><h2>Meta de ahorro: ${eur(S.goal)}</h2><div class="bar"><i style="width:${p}%"></i></div><div class="row"><input id="gi" type="number" placeholder="Nueva meta en €" aria-label="Meta"><button class="btn ghost" onclick="S.goal=+$('gi').value||S.goal;go()">Cambiar</button></div></div>
+<div class="card"><div class="row"><input id="tn" placeholder="Concepto" aria-label="Concepto"><input id="ta" type="number" placeholder="€" style="max-width:90px" aria-label="Importe"></div>
+<div class="row" style="margin-top:8px"><button class="btn" onclick="addTx(1)">+ Ingreso</button><button class="btn ghost" onclick="addTx(-1)">− Gasto</button></div></div>
+<div class="card">${list(S.tx.slice().reverse(),x=>`<div class="item"><span>${esc(x.n)}</span><b class="${x.a>0?"good":"bad"}">${eur(x.a)}</b></div>`,"Sin movimientos todavía. Registra tu primer ingreso o gasto.")}</div>`}
+if(tab==="estudio"){const c=S.cards[ci];
+return `<h1>Estudio</h1><p class="sub">Tarjetas para repasar lo que quieras aprender</p>
+<div class="card">${c?`<div class="flash" onclick="show=!show;go()" tabindex="0" role="button">${esc(show?c.b:c.f)}</div>
+<div class="row" style="margin-top:10px;justify-content:space-between"><button class="btn ghost" onclick="ci=(ci-1+S.cards.length)%S.cards.length;show=false;go()">Anterior</button><span class="sub" style="margin:0">${ci+1} / ${S.cards.length}</span><button class="btn" onclick="ci=(ci+1)%S.cards.length;show=false;go()">Siguiente</button></div>
+<button class="x" style="margin-top:8px" onclick="S.cards.splice(ci,1);ci=0;show=false;go()">Borrar esta tarjeta</button>`:`<p class="empty">Crea tu primera tarjeta con una pregunta y su respuesta.</p>`}</div>
+<div class="card"><h2>Nueva tarjeta</h2><div class="row"><input id="cf" placeholder="Pregunta" aria-label="Pregunta"><input id="cb" placeholder="Respuesta" aria-label="Respuesta"></div><button class="btn" style="margin-top:8px" onclick="addCard()">Guardar tarjeta</button></div>`}
+const h=S.habits.filter(x=>x.done).length;
+return `<h1>Salud</h1><p class="sub">Agua y hábitos de hoy</p>
+<div class="card"><h2>Agua</h2><div class="big">${S.water} <span class="sub" style="font-size:1rem">/ 8 vasos</span></div><div class="bar"><i style="width:${Math.min(100,S.water/8*100)}%"></i></div>
+<div class="row"><button class="btn" onclick="S.water++;go()">+ Vaso</button><button class="btn ghost" onclick="S.water=Math.max(0,S.water-1);go()">− Vaso</button></div></div>
+<div class="card"><h2>Hábitos (${h}/${S.habits.length})</h2><div class="row"><input id="hi" placeholder="Ej. Caminar 30 min" aria-label="Nuevo hábito"><button class="btn" onclick="addHab()">Añadir</button></div>
+${list(S.habits,(x,i)=>`<div class="item ${x.done?"done":""}"><input type="checkbox" style="flex:none" ${x.done?"checked":""} onchange="S.habits[${i}].done=this.checked;go()" aria-label="Hecho"><span>${esc(x.n)}</span><button class="x" onclick="S.habits.splice(${i},1);go()" aria-label="Borrar">×</button></div>`,"Añade un hábito para marcarlo cada día.")}</div>`}
+
+function go(){save();$("app").innerHTML=views();
+document.querySelector("nav").innerHTML=TABS.map(([k,l])=>`<button role="tab" aria-selected="${k===tab}" onclick="tab='${k}';go()">${l}</button>`).join("")}
+function addTask(){const v=$("ti").value.trim();if(v){S.tasks.push({t:v,d:false});go()}}
+function addTx(s){const n=$("tn").value.trim(),a=Math.abs(+$("ta").value);if(n&&a){S.tx.push({n,a:a*s});go()}}
+function addCard(){const f=$("cf").value.trim(),b=$("cb").value.trim();if(f&&b){S.cards.push({f,b});ci=S.cards.length-1;show=false;go()}}
+function addHab(){const v=$("hi").value.trim();if(v){S.habits.push({n:v,done:false});go()}}
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.tagName==="INPUT"){const m={ti:addTask,tn:()=>addTx(-1),ta:()=>addTx(-1),cf:addCard,cb:addCard,hi:addHab}[e.target.id];if(m)m()}});
+go();
+</script>
+</body>
+</html>

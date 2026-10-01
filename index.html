@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Nexo — tu día, tu dinero y tu cabeza en un solo sitio</title>
+<meta name="description" content="Nexo reúne tus tareas, finanzas, tarjetas de estudio y hábitos de salud en una sola app sencilla y gratuita.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f7;--card:#fff;--ink:#0f1b33;--mute:#5d6b85;--acc:#2b4cff;--accink:#fff;--line:#d9e0ec;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#0b1020;--card:#151c33;--ink:#eaf0ff;--mute:#93a0bf;--acc:#6c86ff;--accink:#0b1020;--line:#262f4d}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 Sora,system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:0 20px}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.logo{font-weight:800;font-size:1.3rem;letter-spacing:-.03em}
+a{color:inherit}
+.btn{display:inline-block;background:var(--acc);color:var(--accink);text-decoration:none;font-weight:600;padding:14px 24px;border-radius:12px}
+.btn.sm{padding:9px 16px;font-size:.9rem}
+.btn:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.hero{padding:56px 0 40px}
+h1{font-size:clamp(2.4rem,8vw,4.6rem);line-height:1.02;font-weight:800;letter-spacing:-.04em;margin:0 0 20px;max-width:14ch}
+.lead{color:var(--mute);max-width:46ch;margin:0 0 28px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:24px 0 56px}
+.f{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.f h2{font-size:1.1rem;margin:0 0 6px}
+.f p{margin:0;color:var(--mute);font-size:.95rem}
+.cta{background:var(--acc);color:var(--accink);border-radius:20px;padding:36px 28px;margin-bottom:56px}
+.cta h2{font-size:1.7rem;letter-spacing:-.02em;margin:0 0 8px}
+.cta p{margin:0 0 20px;opacity:.9}
+.cta .btn{background:var(--accink);color:var(--acc)}
+footer{color:var(--mute);font-size:.85rem;padding:0 0 32px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><span class="logo">Nexo</span><a class="btn sm" href="dashboard.html">Abrir Nexo</a></header>
+<section class="hero">
+<h1>Tu día, tu dinero y tu cabeza en un solo sitio.</h1>
+<p class="lead">Apunta tareas, controla gastos, repasa lo que estudias y cuida tus hábitos sin cambiar de app. Gratis, sin registro y desde cualquier dispositivo.</p>
+<a class="btn" href="dashboard.html">Empezar ahora</a>
+</section>
+<section class="grid" aria-label="Funciones">
+<div class="f"><h2>Hoy</h2><p>Tus tareas con una barra que muestra cuánto llevas hecho.</p></div>
+<div class="f"><h2>Dinero</h2><p>Ingresos, gastos y una meta de ahorro siempre a la vista.</p></div>
+<div class="f"><h2>Estudio</h2><p>Tarjetas de pregunta y respuesta para repasar a tu ritmo.</p></div>
+<div class="f"><h2>Salud</h2><p>Cuenta tus vasos de agua y marca tus hábitos cada día.</p></div>
+</section>
+<section class="cta">
+<h2>Prueba Nexo en 10 segundos</h2>
+<p>Tus datos se quedan en tu navegador. No hay que crear ninguna cuenta.</p>
+<a class="btn" href="dashboard.html">Abrir el panel</a>
+</section>
+<footer>© Nexo. Hecho con Claude.</footer>
+</div>
+</body>
+</html>
